@@ -1,0 +1,44 @@
+name: Test
+
+on: [push, pull_request]
+
+env:
+  FORCE_COLOR: 1
+
+jobs:
+  npm-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: npx playwright install-deps
+      - run: npx playwright install
+      - run: docker-compose up -d example
+      - run: npm test
+      - run: docker-compose down
+        if: always()
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: npm-test-results
+          path: test-results
+
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: docker-compose run --rm playwright
+      - run: docker-compose down
+        if: always()
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: docker-test-results
+          path: test-results

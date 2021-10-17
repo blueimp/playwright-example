@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  mailhog:
+    image: blueimp/mailhog
+    read_only: true
+    ports:
+      - 127.0.0.1:8025:8025
+  example:
+    build: ./src
+    read_only: true
+    tmpfs: /tmp
+    environment:
+      - SMTP_HOST=mailhog:1025
+    volumes:
+      - ./src/html:/srv/html:ro
+    ports:
+      - 127.0.0.1:8080:8080
+    depends_on:
+      - mailhog
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.15.2-focal
+    entrypoint: npx playwright test
+    ipc: host
+    environment:
+      - MAILHOG_HOST=mailhog
+      - BASE_URL=http://example:8080
+      - FORCE_COLOR=1
+    working_dir: /app
+    volumes:
+      - .:/app:ro
+      # Videos, error screenshots and traces are stored in test-results:
+      - ./test-results:/app/test-results
+      # Snapshot results are stored alongside spec files:
+      - ./test:/app/test
+    depends_on:
+      - example
