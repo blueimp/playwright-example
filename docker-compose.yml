@@ -18,7 +18,7 @@ services:
     depends_on:
       - mailhog
   playwright:
-    image: mcr.microsoft.com/playwright:v1.15.2-focal
+    image: mcr.microsoft.com/playwright:v1.16.1-focal
     entrypoint: npx playwright test
     ipc: host
     environment:
