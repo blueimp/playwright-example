@@ -28,6 +28,10 @@ const config: PlaywrightTestConfig = {
     {
       name: 'mobile-chromium',
       use: devices['Pixel 5']
+    },
+    {
+      name: 'mobile-webkit',
+      use: devices['iPhone 13']
     }
   ]
 }
